@@ -1,0 +1,275 @@
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.*;
+import java.applet.Applet;
+
+// Clase para pintar casi todos los componentes que ofrece el AWT
+// de Java y poder visualizar su apariencia en la pantalla
+public class Principal extends Applet {
+  TextArea edicion;
+  miCanvas dibujo;
+  Label edicionLab,lapizLab;
+  List colores;
+  Button imprimir,borrar;
+  Choice figuras;
+  Checkbox relleno;
+  Scrollbar lapizBar;
+  TextField lapizTex;
+  Panel panelIzq,panelDch,panelBot,panelDib;
+
+  
+  
+  public void init() {
+    // Creamos los paneles con sus layout managers
+	  
+    panelIzq = new Panel();
+    panelIzq.setLayout( new BorderLayout() );
+
+    panelDch = new Panel();
+    panelDch.setLayout( new BorderLayout() );
+
+    panelBot = new Panel();
+    panelBot.setLayout( new GridLayout( 4,0 ) );
+
+    panelDib = new Panel();
+    panelDib.setLayout( new BorderLayout() );
+    panelDib.setBounds( 1,1,200,20 );
+
+    // Construimos el lado izquierdo de la ventana
+    // Creamos la lista de colores
+    colores = new List( 6,false );
+    colores.add( "Rojo" );
+    colores.add( "Naranja" );
+    colores.add( "Amarillo" );
+    colores.add( "Verde" );
+    colores.add( "Azul" );
+    colores.add( "Morado" );
+    colores.add( "Negro" );
+    colores.add( "Blanco" );
+    
+    
+    // Añadimos la lista de colores al panel izquierdo
+    panelIzq.add( "West",colores );
+
+    // Creamos un nuevo Canvas
+    dibujo = new miCanvas();
+    dibujo.setBounds( 0,0,100,100 );
+    // Añadimos el canvas al panel izquierdo
+    panelIzq.add( "Center",dibujo );
+
+    // Creamos los botones
+    borrar = new Button( "Borrar" );
+    imprimir = new Button( "Imprimir" );
+    figuras = new Choice();
+    figuras.addItem( "Cuadrado" );
+    figuras.addItem( "Círculo" );
+    figuras.addItem( "Triángulo" );
+    relleno = new Checkbox( "Relleno" );
+    // Añadimos los botones a su propio panel
+    panelBot.add( borrar );
+    panelBot.add( imprimir );
+    panelBot.add( figuras );
+    panelBot.add( relleno );
+    // Añadimos el panel de botones al lado derecho
+    panelIzq.add( "East",panelBot );
+
+    // Creamos el area del lápiz
+    lapizLab = new Label( "Lápiz" );
+    lapizBar = new Scrollbar( Scrollbar.HORIZONTAL,1,1,1,10 );
+    lapizBar.setBounds( 1,1,100,5 );
+    lapizTex = new TextField( "1",8 );
+    // Añadimos las partes anteriores a su propio panel
+    panelDib.add( "North",lapizLab );
+    panelDib.add( "Center",lapizBar );
+    panelDib.add( "East",lapizTex );
+    // Añadimos el panel a la parte inferior
+    panelIzq.add( "South",panelDib );
+
+    // Construimos el lado derecho de la ventana
+    edicionLab = new Label( "Editor" );
+    edicion = new TextArea( "Aqui se puede escribir",8,30 );
+    // Añadimos la etiqueta y el área de texto al lado derecho
+    panelDch.add( "North",edicionLab );
+    panelDch.add( "South",edicion );
+
+    // Incorporamos los dos paneles al applet que utiliza
+    // FlowLayout por defecto
+    add( panelIzq );
+    add( panelDch );
+    // Se instancia un objeto para recibir los eventos de la
+    // barra de desplazamiento y se registra para ser notificado
+    // de los eventos de ajuste
+   imprimir.addActionListener(new FigurasListener(figuras,dibujo));
+    
+    ProcesoBarra procesoBarra = new ProcesoBarra( lapizTex );
+    lapizBar.addAdjustmentListener( procesoBarra );
+    
+    colores.addActionListener( new MiListaActionListener(colores,dibujo,edicion));
+    
+    
+   
+    
+    
+    }
+
+  public static void main( String args[] ) {
+    Frame frameA= new Frame( "Tutorial de Java, AWT" );
+    frameA.addWindowListener(  new Conclusion() );
+    Principal ejemplo = new Principal();
+    
+
+    ejemplo.init();
+
+    frameA.add( "Center",ejemplo );
+    frameA.pack();
+    frameA.setVisible( true );
+    
+   
+    
+    }
+  }
+
+class FigurasListener implements ActionListener{
+	Canvas odibujo;
+	Choice ofiguras;
+	FigurasListener(Choice figuras,Canvas dibujo){
+		odibujo = dibujo;
+		ofiguras = figuras;
+	}
+	public void paint( Graphics g ) {
+	    int w = odibujo.getSize().width;
+	    int h = odibujo.getSize().height;
+	     g.drawRect( 0,0,w-1,h-1 );
+	    g.drawString( "Canvas",
+	      ( w-g.getFontMetrics().stringWidth( "Canvas" ) )/2,10 );
+	    }
+	public void actionPerformed(ActionEvent e) {
+		if (ofiguras.getSelectedItem().equals("Cuadrado")){
+				
+		}
+		else if (ofiguras.getSelectedItem().equals("Círculo")){
+			
+		}
+		else if (ofiguras.getSelectedItem().equals("Triángulo")){
+			
+		}
+		
+		
+	}
+	
+	}
+
+
+class ProcesoBarra implements AdjustmentListener {
+	  // A través de esta variable se indicará la psoición del
+	  // indicador en la barra de desplazamiento
+	  TextField posicion;
+
+	  ProcesoBarra( TextField lapizTex ) {
+	    posicion = lapizTex;
+	    }
+
+	  public void adjustmentValueChanged( AdjustmentEvent evt ) {
+	    // Presentamos el valor que representa la posición del
+	    // marcador en el campo de texto
+	    posicion.setText( Integer.toString( evt.getValue()*1000 ) );
+	    }
+	  }
+
+  
+
+class MiListaActionListener implements ActionListener{
+	  List oColores;
+	  String selectedColor;
+	  Canvas odibujo;
+	  TextArea oedicion;
+
+	  MiListaActionListener( List colores,Canvas dibujo,TextArea edicion/*,Frame frameA*/ ) {
+	    // Salva una referencia al objeto List
+		  oColores = colores;
+		  oedicion= edicion;
+		  odibujo = dibujo;
+	    }
+
+	  // Sobreescribe el metodo actionPerformed() del interfaz
+	  // ActionListener
+	  public void actionPerformed( ActionEvent evt ) {
+		  selectedColor =oColores.getSelectedItem() ;
+		  if(selectedColor.equals("Rojo")){
+		odibujo.setBackground(Color.red);
+		oedicion.setText("Color elegido " + selectedColor);
+	     System.out.println("El color es"+ selectedColor);
+	     System.out.println("El elegido es"+ oColores.getSelectedItem());   
+	    }
+		  else if(selectedColor.equals("Naranja")){
+				odibujo.setBackground(Color.orange);  
+				oedicion.setText("Color elegido " + selectedColor);
+			     System.out.println("El color es"+ selectedColor);
+			     System.out.println("El elegido es"+ oColores.getSelectedItem());   
+			    }
+		  else if(selectedColor.equals("Amarillo")){
+				odibujo.setBackground(Color.yellow);  
+				oedicion.setText("Color elegido " + selectedColor);
+			     System.out.println("El color es"+ selectedColor);
+			     System.out.println("El elegido es"+ oColores.getSelectedItem());   
+			    }
+		  else if(selectedColor.equals("Verde")){
+				odibujo.setBackground(Color.green); 
+				oedicion.setText("Color elegido " + selectedColor);
+			     System.out.println("El color es"+ selectedColor);
+			     System.out.println("El elegido es"+ oColores.getSelectedItem());   
+			    }
+		  else if(selectedColor.equals("Azul")){
+				odibujo.setBackground(Color.blue);  
+				oedicion.setText("Color elegido " + selectedColor);
+			     System.out.println("El color es"+ selectedColor);
+			     System.out.println("El elegido es"+ oColores.getSelectedItem());   
+			    }
+		  else if(selectedColor.equals("Morado")){
+				odibujo.setBackground(Color.magenta);
+				oedicion.setText("Color elegido " + selectedColor);
+			     System.out.println("El color es"+ selectedColor);
+			     System.out.println("El elegido es"+ oColores.getSelectedItem());   
+			    }
+		  else if(selectedColor.equals("Negro")){
+				odibujo.setBackground(Color.black);  
+				oedicion.setText("Color elegido " + selectedColor);
+			     System.out.println("El color es"+ selectedColor);
+			     System.out.println("El elegido es"+ oColores.getSelectedItem());   
+			    }
+		  else if(selectedColor.equals("Blanco")){
+				odibujo.setBackground(Color.white);  
+				oedicion.setText("Color elegido " + selectedColor);
+			     System.out.println("El color es"+ selectedColor);
+			     System.out.println("El elegido es"+ oColores.getSelectedItem());   
+			    }
+	  }
+	  }
+
+// Creamos una clase para poder pintar una zona de dibujo y que
+// se muestre el canvas. Pintamos un rectangulo alrededor suyo
+class miCanvas extends Canvas {
+  public void paint( Graphics g ) {
+    int w = getSize().width;
+    int h = getSize().height;
+    g.drawRect( 0,0,w-1,h-1 );
+    g.drawString( "Canvas",
+      ( w-g.getFontMetrics().stringWidth( "Canvas" ) )/2,10 );
+    }
+  
+  }
+class Conclusion extends WindowAdapter {
+	  public void windowClosing( WindowEvent evt ) {
+	    System.exit( 0 );
+	    }
+}
+
+
+
+//------------------------------------------ Final del fichero Java1421.java
