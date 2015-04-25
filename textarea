@@ -1,0 +1,147 @@
+
+import java.awt.*;
+import java.awt.event.*;
+
+public class Principal {
+  public static void main( String args[] ) {
+    IHM ihm = new IHM();
+    }
+  }
+
+
+class IHM {
+	//Creación de los objetos de la aplicación.
+	Button Go;
+	TextField ancho,alto;
+	TextArea canvas;
+	Choice figuras;
+	
+   IHM() {
+    // Instanciación de los objetos de la aplicación.
+    Go = new Button("Dibuja");
+   
+    ancho = new TextField("");
+    alto = new TextField("");
+    figuras = new Choice();
+    figuras.addItem("Rectángulo Sólido");
+    figuras.addItem("Rectángulo Hueco");
+    figuras.addItem("Media Pirámide");
+    figuras.addItem("Pirámide completa");
+    canvas = new TextArea("                      \n                        \n                         \n");
+    canvas.setBackground(Color.BLACK);
+    canvas.setForeground(Color.GREEN);
+    canvas.setFont(new Font("Serif",Font.BOLD,20));
+    
+    
+    //Añadimos los gestores para los botones de subir y bajar de la aplicación  
+    Go.addActionListener( new control(ancho,alto,canvas,figuras));
+   
+ 
+    //Creación del Frame.
+    Frame miFrame = new Frame( "Tutorial de Java, AWT" );
+    //Establecimiento del layout para el Frame.
+    miFrame.setLayout(new FlowLayout());
+    //Incorporación de los objetos que van a formar parte del Frame.
+    miFrame.add(new Label("Ancho"));
+    miFrame.add(ancho);
+    miFrame.add(new Label("Alto"));
+    miFrame.add(alto);
+    miFrame.add(figuras);
+    miFrame.add(Go);
+    miFrame.add(canvas);
+    //Redimensionamiento del tamaño del Frame.
+    miFrame.setSize( 700,350 );
+    //El Frame se hace visible.
+    miFrame.setVisible( true );
+
+    // Se instancia y registra un receptor sobre la ventana para
+    // concluir la ejecucion del programa cuando se cierre el Frame
+    miFrame.addWindowListener( new Conclusion() );
+    //Añadimos un gestor para salir de la aplicación.
+    }
+  }
+ 
+class control implements ActionListener{
+	TextField oancho;
+	TextField oalto;
+	TextArea ocanvas;
+	Choice ofiguras;
+	int go;
+	control(TextField ancho,TextField alto,TextArea canvas,Choice figuras){
+		 oancho= ancho;
+		 oalto = alto;
+		 ocanvas = canvas;
+		 ofiguras = figuras;
+	
+	}
+	public void actionPerformed(ActionEvent  evt) {
+		ocanvas.setText("");
+		ocanvas.append("\n");
+		ocanvas.append("                                                ");
+		do{
+		if(Integer.parseInt(oancho.getText())<=2 && Integer.parseInt(oancho.getText())>=20  ){
+			ocanvas.setText("Error Límites excedidos");
+			
+		}
+		 if(Integer.parseInt(oancho.getText())==0 && Integer.parseInt(oalto.getText())==0  ){
+			ocanvas.append("Introduzca datos");
+		}
+		else go=1;
+		}while(go!=1);
+		
+		
+		 if(ofiguras.getSelectedItem().equals("Rectángulo Sólido"))
+		{
+		
+		for ( int i=1 ;i <= Integer.parseInt(oalto.getText());i++){
+			
+			for ( int j=1 ;j<= Integer.parseInt(oancho.getText());j++){
+				ocanvas.append("  *  ");
+				
+			}
+			ocanvas.append("\n");
+			ocanvas.append("                                                ");
+		}
+	}
+		else if(ofiguras.getSelectedItem().equals("Rectángulo Hueco"))
+		{
+		
+			for ( int i=1 ;i <= Integer.parseInt(oalto.getText());i++){
+				
+				for ( int j=1 ;j<= Integer.parseInt(oancho.getText());j++){
+					
+					if ((i>1 && i<Integer.parseInt(oalto.getText())) && j>1 && j<Integer.parseInt(oancho.getText())  ) {
+						ocanvas.append("      ");
+					}
+					else{
+						ocanvas.append("  *  ");
+					}
+					
+				}
+				ocanvas.append("\n");
+				ocanvas.append("                                                ");
+			}
+		
+	
+	}
+		 if(ofiguras.getSelectedItem().equals("Media Pirámide")){
+			 for (int i=1; i<=Integer.parseInt(oalto.getText());i++){
+				 for ( int j=1 ;j<= 10;j++){
+					 
+				 ocanvas.append("  *  ");
+			 }
+				 ocanvas.append("\n");
+		 }
+			 
+		 }
+}
+}
+
+
+class Conclusion extends WindowAdapter {
+  public void windowClosing( WindowEvent evt ) {
+    // Concluye la aplicacion cuando el usuario cierra la ventana
+    System.exit( 0 );
+    }
+  }
+
